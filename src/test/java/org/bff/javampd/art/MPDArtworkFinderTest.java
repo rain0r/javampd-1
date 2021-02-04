@@ -250,11 +250,7 @@ public class MPDArtworkFinderTest {
 
     @Test
     public void findPathDirectoryIOException() {
-        String javaTempDir = System.getProperty("java.io.tmpdir");
-        File tempDir = new File(javaTempDir + (javaTempDir.endsWith(File.separator) ? "" : File.separator) + "imageTemp");
-        tempDir.mkdir();
-        tempDir.setWritable(true);
-
+        File tempDir = new File(System.getProperty("java.io.tmpdir") + "imageTemp");
         File testFile = null;
         try {
             testFile = File.createTempFile("test", ".jpg", tempDir);
@@ -262,11 +258,8 @@ public class MPDArtworkFinderTest {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-
-        tempDir.setReadable(false);
         File finalTestFile = testFile;
         assertThrows(MPDException.class, () -> artworkFinder.find(finalTestFile.getParent()));
-
     }
 
     @Test
