@@ -29,12 +29,12 @@
     </licenses>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/finnyb/javampd/issues</url>
+        <url>https://github.com/rain0r/javampd/issues</url>
     </issueManagement>
     <scm>
-        <connection>scm:git:https://github.com/finnyb/javampd.git</connection>
-        <developerConnection>scm:git:https://github.com/finnyb/javampd.git</developerConnection>
-        <url>https://github.com/finnyb/javampd</url>
+        <connection>scm:git:https://github.com/rain0r/javampd.git</connection>
+        <developerConnection>scm:git:https://github.com/rain0r/javampd.git</developerConnection>
+        <url>https://github.com/rain0r/javampd</url>
     </scm>
     <ciManagement>
         <system>jenkins</system>
