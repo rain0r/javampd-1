@@ -6,6 +6,7 @@ import org.bff.javampd.command.CommandExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * @author bill
  */
+@Singleton
 public class MPDServerStatus implements ServerStatus {
     private static final Logger LOGGER = LoggerFactory.getLogger(MPDServerStatus.class);
 
