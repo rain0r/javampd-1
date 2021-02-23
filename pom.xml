@@ -9,14 +9,13 @@
     <url>https://github.com/finnyb/javampd/</url>
     <developers>
         <developer>
-            <id>bill</id>
-            <name>Bill</name>
-            <email>billf5293@gmail.com</email>
+            <id>rain0r</id>
+            <name>Rainer</name>
+            <email>hihn.rainer@gmail.com</email>
             <roles>
-                <role>architect</role>
                 <role>developer</role>
             </roles>
-            <timezone>America/Chicago</timezone>
+            <timezone>Europe/Berlin</timezone>
         </developer>
     </developers>
     <licenses>
