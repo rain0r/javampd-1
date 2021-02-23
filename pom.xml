@@ -4,7 +4,7 @@
     <groupId>org.hihn</groupId>
     <artifactId>javampd</artifactId>
     <packaging>jar</packaging>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>6.2.0-SNAPSHOT</version>
     <name>JavaMPD</name>
     <description>A Java API for controlling the Music Player Daemon (MPD)</description>
     <url>https://github.com/finnyb/javampd/</url>
