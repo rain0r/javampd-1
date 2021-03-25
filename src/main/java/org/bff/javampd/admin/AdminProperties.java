@@ -31,6 +31,10 @@ public class AdminProperties extends MPDProperties {
         return getPropertyString(Command.REFRESH.getKey());
     }
 
+    public String getRescan() {
+        return getPropertyString(Command.RESCAN.getKey());
+    }
+
     public String getOutputs() {
         return getPropertyString(Command.OUTPUTS.getKey());
     }
