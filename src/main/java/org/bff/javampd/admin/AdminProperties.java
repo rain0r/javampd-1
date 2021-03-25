@@ -7,6 +7,7 @@ public class AdminProperties extends MPDProperties {
     private enum Command {
         KILL("admin.kill"),
         REFRESH("admin.refresh"),
+        RESCAN("admin.rescan"),
         OUTPUTS("admin.outputs"),
         OUTPUT_ENABLE("admin.enable.out"),
         OUTPUT_DISABLE("admin.disable.out");
