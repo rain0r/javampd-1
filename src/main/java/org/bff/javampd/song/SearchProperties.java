@@ -9,7 +9,8 @@ public class SearchProperties extends MPDProperties {
     private enum Command {
         FIND("db.find"),
         SEARCH("db.search"),
-        WINDOW("db.window");
+        WINDOW("db.window"),
+        ALBUMART("db.albumart");
 
         private final String key;
 
@@ -32,5 +33,9 @@ public class SearchProperties extends MPDProperties {
 
     public String getSearch() {
         return getPropertyString(Command.SEARCH.getKey());
+    }
+
+    public String getAlbumArt() {
+        return getPropertyString(Command.ALBUMART.getKey());
     }
 }

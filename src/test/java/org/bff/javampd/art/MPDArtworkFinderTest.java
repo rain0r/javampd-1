@@ -3,7 +3,10 @@ package org.bff.javampd.art;
 import org.bff.javampd.MPDException;
 import org.bff.javampd.album.MPDAlbum;
 import org.bff.javampd.artist.MPDArtist;
+import org.bff.javampd.command.CommandExecutor;
+import org.bff.javampd.server.ServerProperties;
 import org.bff.javampd.song.MPDSong;
+import org.bff.javampd.song.SearchProperties;
 import org.bff.javampd.song.SongDatabase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,9 +32,20 @@ public class MPDArtworkFinderTest {
     @Mock
     private SongDatabase songDatabase;
 
+    @Mock
+    private CommandExecutor commandExecutor;
+
+    @Mock
+    private SearchProperties searchProperties;
+
+    @Mock
+    private ServerProperties serverProperties;
+
+
     @BeforeEach
     public void before() {
-        artworkFinder = new MPDArtworkFinder(this.songDatabase);
+        artworkFinder = new MPDArtworkFinder(this.songDatabase, this.commandExecutor,
+            this.searchProperties, this.serverProperties);
     }
 
     @Test

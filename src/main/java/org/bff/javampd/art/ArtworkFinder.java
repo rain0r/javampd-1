@@ -59,4 +59,11 @@ public interface ArtworkFinder {
      * @return a list of {@link MPDArtwork}
      */
     List<MPDArtwork> find(String path);
+
+    /**
+     * Look for artwork in the parent directory of a file.
+     * @param path The track file path.
+     * @return
+     */
+    MPDArtwork findArtwork(String path);
 }
