@@ -23,19 +23,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MPDArtworkFinderTest {
+class MPDArtworkFinderTest {
     private ArtworkFinder artworkFinder;
 
     @Mock
     private SongDatabase songDatabase;
 
     @BeforeEach
-    public void before() {
+    void before() {
         artworkFinder = new MPDArtworkFinder(this.songDatabase);
     }
 
     @Test
-    public void findArtist() throws IOException {
+    void findArtist() throws IOException {
         String[] artistImages = new String[]{
                 "artist200x200.jpg",
                 "artist200x200.png"
@@ -92,7 +92,7 @@ public class MPDArtworkFinderTest {
     }
 
     @Test
-    public void findArtistPrefix() throws UnsupportedEncodingException {
+    void findArtistPrefix() throws UnsupportedEncodingException {
         String[] artistImages = new String[]{
                 "artist200x200.jpg",
                 "artist200x200.png"
@@ -138,7 +138,7 @@ public class MPDArtworkFinderTest {
     }
 
     @Test
-    public void findArtistBadPath() throws UnsupportedEncodingException {
+    void findArtistBadPath() throws UnsupportedEncodingException {
         String[] artistImages = new String[]{
                 "artist200x200.png"
         };
@@ -157,7 +157,7 @@ public class MPDArtworkFinderTest {
     }
 
     @Test
-    public void findAlbum() throws UnsupportedEncodingException {
+    void findAlbum() throws UnsupportedEncodingException {
         String[] albumImages = new String[]{
                 "album200x200.jpg",
                 "album200x200.png"
@@ -187,7 +187,7 @@ public class MPDArtworkFinderTest {
     }
 
     @Test
-    public void findAlbumPrefix() throws UnsupportedEncodingException {
+    void findAlbumPrefix() throws UnsupportedEncodingException {
         String[] albumImages = new String[]{
                 "album200x200.jpg",
                 "album200x200.png"
@@ -217,7 +217,7 @@ public class MPDArtworkFinderTest {
     }
 
     @Test
-    public void findPath() throws UnsupportedEncodingException {
+    void findPath() throws UnsupportedEncodingException {
         String[] images = new String[]{
                 "artist200x200.jpg",
                 "artist200x200.png"
@@ -240,7 +240,7 @@ public class MPDArtworkFinderTest {
     }
 
     @Test
-    public void findPathIOException() throws IOException {
+    void findPathIOException() throws IOException {
         File testFile = File.createTempFile("test", ".jpg");
 
         testFile.setReadable(false);
@@ -248,22 +248,29 @@ public class MPDArtworkFinderTest {
         assertThrows(MPDException.class, () -> artworkFinder.find(testFile.getParent()));
     }
 
-//    @Test
-//    public void findPathDirectoryIOException() {
-//        File tempDir = new File(System.getProperty("java.io.tmpdir") + "imageTemp");
-//        File testFile = null;
-//        try {
-//            testFile = File.createTempFile("test", ".jpg", tempDir);
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//            e.printStackTrace();
-//        }
-//        File finalTestFile = testFile;
-//        assertThrows(MPDException.class, () -> artworkFinder.find(finalTestFile.getParent()));
-//    }
+    @Test
+    void findPathDirectoryIOException() {
+        String javaTempDir = System.getProperty("java.io.tmpdir");
+        File tempDir = new File(javaTempDir + (javaTempDir.endsWith(File.separator) ? "" : File.separator) + "imageTemp");
+        tempDir.mkdir();
+        tempDir.setWritable(true);
+
+        File testFile = null;
+        try {
+            testFile = File.createTempFile("test", ".jpg", tempDir);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+        tempDir.setReadable(false);
+        File finalTestFile = testFile;
+        assertThrows(MPDException.class, () -> artworkFinder.find(finalTestFile.getParent()));
+
+    }
 
     @Test
-    public void findBadPath() {
+    void findBadPath() {
         assertThrows(MPDException.class, () -> artworkFinder.find("bad"));
     }
 

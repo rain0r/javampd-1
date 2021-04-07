@@ -2,46 +2,48 @@ package org.bff.javampd.output;
 
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MPDOutputTest {
+class MPDOutputTest {
 
     @Test
-    public void testEquals() {
+    void testEquals() {
         MPDOutput output1 = new MPDOutput(1);
         MPDOutput output2 = new MPDOutput(1);
 
-        assertEquals(output1, output2);
+        assertThat(output1, is(equalTo(output2)));
     }
 
     @Test
-    public void testNotEquals() {
+    void testNotEquals() {
         MPDOutput output1 = new MPDOutput(1);
         MPDOutput output2 = new MPDOutput(2);
 
-        assertNotEquals(output1, output2);
+        assertThat(output1, is(not(equalTo(output2))));
     }
 
     @Test
-    public void testEqualsNull() {
+    void testEqualsNull() {
         MPDOutput item = new MPDOutput(1);
 
-        assertNotEquals(item, null);
+        assertThat(item, is(notNullValue()));
     }
 
     @Test
-    public void testEqualsSameObject() {
+    void testEqualsSameObject() {
         MPDOutput item = new MPDOutput(1);
 
-        assertTrue(item.equals(item));
+        assertThat(item, is(equalTo(item)));
     }
 
     @Test
-    public void testHashCode() {
+    void testHashCode() {
         MPDOutput output1 = new MPDOutput(1);
         MPDOutput output2 = new MPDOutput(2);
 
-        assertEquals(output1.hashCode(), output2.hashCode());
+        assertThat(output1.hashCode(), is(not(equalTo(output2.hashCode()))));
     }
 
 }

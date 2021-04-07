@@ -6,6 +6,8 @@ import org.bff.javampd.song.MPDSong;
 import org.bff.javampd.song.SongConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -15,11 +17,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MPDPlayerTest {
+class MPDPlayerTest {
 
     @Mock
     private ServerStatus serverStatus;
@@ -28,6 +33,7 @@ public class MPDPlayerTest {
 
     @Mock
     private CommandExecutor commandExecutor;
+
     @Mock
     private SongConverter songConverter;
 
@@ -44,7 +50,7 @@ public class MPDPlayerTest {
     private ArgumentCaptor<String> paramArgumentCaptor;
 
     @Test
-    public void testGetCurrentSong() {
+    void testGetCurrentSong() {
         List<String> responseList = new ArrayList<>();
         String testFile = "testFile";
         String testTitle = "testTitle";
@@ -61,12 +67,12 @@ public class MPDPlayerTest {
 
         MPDSong song = mpdPlayer.getCurrentSong();
 
-        assertEquals(testSong.getFile(), song.getFile());
-        assertEquals(testSong.getTitle(), song.getTitle());
+        assertThat(song.getFile(), is(equalTo((testSong.getFile()))));
+        assertThat(song.getTitle(), is(equalTo((testSong.getTitle()))));
     }
 
     @Test
-    public void testGetCurrentSongEmpty() {
+    void testGetCurrentSongEmpty() {
         List<String> responseList = new ArrayList<>();
         List<MPDSong> testSongResponse = new ArrayList<>();
 
@@ -81,16 +87,16 @@ public class MPDPlayerTest {
     }
 
     @Test
-    public void testPlay() {
+    void testPlay() {
         when(playerProperties.getPlay()).thenCallRealMethod();
         mpdPlayer.play();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getPlay(), stringArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getPlay()))));
     }
 
     @Test
-    public void testPlaySong() {
+    void testPlaySong() {
         int id = 1;
         String testFile = "testFile";
         String testTitle = "testTitle";
@@ -101,20 +107,17 @@ public class MPDPlayerTest {
         mpdPlayer.playSong(testSong);
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), integerArgumentCaptor.capture());
-        assertEquals(playerProperties.getPlayId(), stringArgumentCaptor.getValue());
-        assertTrue(id == integerArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getPlayId()))));
+        assertThat(id, is(equalTo(integerArgumentCaptor.getValue())));
     }
 
     @Test
-    public void testSeek() {
+    void testSeek() {
         int seconds = 100;
         List<String> responseList = new ArrayList<>();
         String testFile = "testFile";
         String testTitle = "testTitle";
         int id = 5;
-
-        String[] params = new String[2];
-        params[1] = Long.toString(seconds);
 
         MPDSong testSong = new MPDSong(testFile, testTitle);
         testSong.setId(id);
@@ -133,21 +136,18 @@ public class MPDPlayerTest {
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), paramArgumentCaptor.capture());
 
-        assertEquals(playerProperties.getSeekId(), stringArgumentCaptor.getValue());
-        assertEquals(Integer.toString(testSong.getId()), paramArgumentCaptor.getAllValues().get(0));
-        assertEquals(Integer.toString(seconds), paramArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getSeekId()))));
+        assertThat(paramArgumentCaptor.getAllValues().get(0), is(equalTo((Integer.toString(testSong.getId())))));
+        assertThat(paramArgumentCaptor.getAllValues().get(1), is(equalTo((Integer.toString(seconds)))));
     }
 
     @Test
-    public void testSeekSongLengthLessThanRequest() {
+    void testSeekSongLengthLessThanRequest() {
         int seconds = 100;
         List<String> responseList = new ArrayList<>();
         String testFile = "testFile";
         String testTitle = "testTitle";
         int id = 5;
-
-        String[] params = new String[2];
-        params[1] = Long.toString(seconds);
 
         MPDSong testSong = new MPDSong(testFile, testTitle);
         testSong.setId(id);
@@ -167,15 +167,11 @@ public class MPDPlayerTest {
     }
 
     @Test
-    public void testSeekSong() {
+    void testSeekSong() {
         int seconds = 100;
-        List<String> responseList = new ArrayList<>();
         String testFile = "testFile";
         String testTitle = "testTitle";
         int id = 5;
-
-        String[] params = new String[2];
-        params[1] = Long.toString(seconds);
 
         MPDSong testSong = new MPDSong(testFile, testTitle);
         testSong.setId(id);
@@ -190,24 +186,24 @@ public class MPDPlayerTest {
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), paramArgumentCaptor.capture());
 
-        assertEquals(playerProperties.getSeekId(), stringArgumentCaptor.getValue());
-        assertEquals(Integer.toString(testSong.getId()), paramArgumentCaptor.getAllValues().get(0));
-        assertEquals(Integer.toString(seconds), paramArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getSeekId()))));
+        assertThat(paramArgumentCaptor.getAllValues().get(0), is(equalTo((Integer.toString(testSong.getId())))));
+        assertThat(paramArgumentCaptor.getAllValues().get(1), is(equalTo((Integer.toString(seconds)))));
     }
 
     @Test
-    public void testPlayerChangeEventStarted() {
+    void testPlayerChangeEventStarted() {
         final PlayerChangeEvent.Event[] playerChangeEvent = {null};
         mpdPlayer.addPlayerChangeListener(event -> playerChangeEvent[0] = event.getEvent());
 
         when(playerProperties.getPlay()).thenCallRealMethod();
         mpdPlayer.play();
 
-        assertEquals(PlayerChangeEvent.Event.PLAYER_STARTED, playerChangeEvent[0]);
+        assertThat(playerChangeEvent[0], is(equalTo((PlayerChangeEvent.Event.PLAYER_STARTED))));
     }
 
     @Test
-    public void testPlayerChangeEventSongSet() {
+    void testPlayerChangeEventSongSet() {
         final PlayerChangeEvent.Event[] playerChangeEvent = {null};
         mpdPlayer.addPlayerChangeListener(event -> playerChangeEvent[0] = event.getEvent());
 
@@ -218,11 +214,11 @@ public class MPDPlayerTest {
         mpdPlayer.play();
         mpdPlayer.playSong(testSong);
 
-        assertEquals(PlayerChangeEvent.Event.PLAYER_SONG_SET, playerChangeEvent[0]);
+        assertThat(playerChangeEvent[0], is(equalTo((PlayerChangeEvent.Event.PLAYER_SONG_SET))));
     }
 
     @Test
-    public void testRemovePlayerChangedListener() {
+    void testRemovePlayerChangedListener() {
         final PlayerChangeEvent.Event[] playerChangeEvent = {null};
 
         PlayerChangeListener playerChangeListener = event -> playerChangeEvent[0] = event.getEvent();
@@ -232,89 +228,89 @@ public class MPDPlayerTest {
         when(playerProperties.getPlay()).thenCallRealMethod();
         mpdPlayer.play();
 
-        assertEquals(PlayerChangeEvent.Event.PLAYER_STARTED, playerChangeEvent[0]);
+        assertThat(playerChangeEvent[0], is(equalTo((PlayerChangeEvent.Event.PLAYER_STARTED))));
 
         when(playerProperties.getStop()).thenCallRealMethod();
         mpdPlayer.stop();
-        assertEquals(PlayerChangeEvent.Event.PLAYER_STOPPED, playerChangeEvent[0]);
+        assertThat(playerChangeEvent[0], is(equalTo((PlayerChangeEvent.Event.PLAYER_STOPPED))));
 
         mpdPlayer.removePlayerChangedListener(playerChangeListener);
         mpdPlayer.play();
-        assertEquals(PlayerChangeEvent.Event.PLAYER_STOPPED, playerChangeEvent[0]);
+        assertThat(playerChangeEvent[0], is(equalTo((PlayerChangeEvent.Event.PLAYER_STOPPED))));
     }
 
     @Test
-    public void testStop() {
+    void testStop() {
         when(playerProperties.getStop()).thenCallRealMethod();
         mpdPlayer.stop();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getStop(), stringArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getStop()))));
     }
 
     @Test
-    public void testPause() {
+    void testPause() {
         when(playerProperties.getPause()).thenCallRealMethod();
         mpdPlayer.pause();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getPause(), stringArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getPause()))));
 
     }
 
     @Test
-    public void testPlayNext() {
+    void testPlayNext() {
         when(playerProperties.getNext()).thenCallRealMethod();
         mpdPlayer.playNext();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getNext(), stringArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getNext()))));
     }
 
     @Test
-    public void testPlayPrevious() {
+    void testPlayPrevious() {
         when(playerProperties.getPrevious()).thenCallRealMethod();
         mpdPlayer.playPrevious();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getPrevious(), stringArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getPrevious()))));
     }
 
     @Test
-    public void testMute() {
+    void testMute() {
         when(playerProperties.getSetVolume()).thenCallRealMethod();
         mpdPlayer.mute();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), integerArgumentCaptor.capture());
-        assertEquals(playerProperties.getSetVolume(), stringArgumentCaptor.getValue());
-        assertTrue(0 == integerArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getSetVolume()))));
+        assertThat(integerArgumentCaptor.getValue(), is(equalTo(0)));
     }
 
     @Test
-    public void testUnMute() {
+    void testUnMute() {
         when(playerProperties.getSetVolume()).thenCallRealMethod();
         mpdPlayer.setVolume(1);
         mpdPlayer.unMute();
         verify(commandExecutor, times(2))
                 .sendCommand(stringArgumentCaptor.capture(), integerArgumentCaptor.capture());
-        assertEquals(playerProperties.getSetVolume(), stringArgumentCaptor.getValue());
-        assertTrue(1 == integerArgumentCaptor.getAllValues().get(0));
-        assertTrue(0 == integerArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getSetVolume()))));
+        assertThat(integerArgumentCaptor.getAllValues().get(0), is(equalTo(1)));
+        assertThat(integerArgumentCaptor.getAllValues().get(1), is(equalTo(0)));
     }
 
     @Test
-    public void testAddVolumeChangeListener() {
+    void testAddVolumeChangeListener() {
         final VolumeChangeEvent[] volumeChangeEvent = {null};
         mpdPlayer.addVolumeChangeListener(event -> volumeChangeEvent[0] = event);
 
         when(playerProperties.getSetVolume()).thenCallRealMethod();
         mpdPlayer.setVolume(5);
 
-        assertEquals(5, volumeChangeEvent[0].getVolume());
+        assertThat(volumeChangeEvent[0].getVolume(), is(equalTo((5))));
     }
 
     @Test
-    public void testAddVolumeChangeListenerOutOfRange() {
+    void testAddVolumeChangeListenerOutOfRange() {
         final VolumeChangeEvent[] volumeChangeEvent = {null};
         mpdPlayer.addVolumeChangeListener(event -> volumeChangeEvent[0] = event);
 
@@ -322,11 +318,11 @@ public class MPDPlayerTest {
         mpdPlayer.setVolume(0);
         mpdPlayer.setVolume(101);
 
-        assertEquals(0, volumeChangeEvent[0].getVolume());
+        assertThat(volumeChangeEvent[0].getVolume(), is(equalTo((0))));
     }
 
     @Test
-    public void testRemoveVolumeChangedListener() {
+    void testRemoveVolumeChangedListener() {
         final VolumeChangeEvent[] volumeChangeEvent = {null};
 
         VolumeChangeListener volumeChangeListener = event -> volumeChangeEvent[0] = event;
@@ -336,110 +332,111 @@ public class MPDPlayerTest {
         when(playerProperties.getSetVolume()).thenCallRealMethod();
         mpdPlayer.setVolume(5);
 
-        assertEquals(5, volumeChangeEvent[0].getVolume());
+        assertThat(volumeChangeEvent[0].getVolume(), (is(equalTo((5)))));
 
         mpdPlayer.removeVolumeChangedListener(volumeChangeListener);
         mpdPlayer.setVolume(0);
 
-        assertEquals(5, volumeChangeEvent[0].getVolume());
+        assertThat(volumeChangeEvent[0].getVolume(), (is(equalTo((5)))));
     }
 
     @Test
-    public void testRandomizePlay() {
+    void testRandomizePlay() {
         when(playerProperties.getRandom()).thenCallRealMethod();
         mpdPlayer.randomizePlay();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getRandom(), stringArgumentCaptor.getAllValues().get(0));
-        assertEquals("1", stringArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo((playerProperties.getRandom()))));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo(("1"))));
     }
 
     @Test
-    public void testUnrandomizePlay() {
+    void testUnrandomizePlay() {
         when(playerProperties.getRandom()).thenCallRealMethod();
         mpdPlayer.unRandomizePlay();
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getRandom(), stringArgumentCaptor.getAllValues().get(0));
-        assertEquals("0", stringArgumentCaptor.getAllValues().get(1));
+
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo(playerProperties.getRandom())));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo(("0"))));
     }
 
     @Test
-    public void testSetRandomTrue() {
+    void testSetRandomTrue() {
         when(playerProperties.getRandom()).thenCallRealMethod();
         mpdPlayer.setRandom(true);
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getRandom(), stringArgumentCaptor.getAllValues().get(0));
-        assertEquals("1", stringArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo((playerProperties.getRandom()))));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo("1")));
     }
 
     @Test
-    public void testSetRandomFalse() {
+    void testSetRandomFalse() {
         when(playerProperties.getRandom()).thenCallRealMethod();
         mpdPlayer.setRandom(false);
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getRandom(), stringArgumentCaptor.getAllValues().get(0));
-        assertEquals("0", stringArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo((playerProperties.getRandom()))));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo(("0"))));
     }
 
     @Test
-    public void testIsRandom() {
+    void testIsRandom() {
         when(serverStatus.isRandom()).thenReturn(true);
-        assertTrue(mpdPlayer.isRandom());
+        assertThat(mpdPlayer.isRandom(), is(true));
     }
 
     @Test
-    public void testSetRepeatTrue() {
+    void testSetRepeatTrue() {
         when(playerProperties.getRepeat()).thenCallRealMethod();
         mpdPlayer.setRepeat(true);
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getRepeat(), stringArgumentCaptor.getAllValues().get(0));
-        assertEquals("1", stringArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo((playerProperties.getRepeat()))));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo(("1"))));
     }
 
     @Test
-    public void testSetRepeatFalse() {
+    void testSetRepeatFalse() {
         when(playerProperties.getRepeat()).thenCallRealMethod();
         mpdPlayer.setRepeat(false);
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
-        assertEquals(playerProperties.getRepeat(), stringArgumentCaptor.getAllValues().get(0));
-        assertEquals("0", stringArgumentCaptor.getAllValues().get(1));
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo((playerProperties.getRepeat()))));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo(("0"))));
     }
 
     @Test
-    public void testIsRepeat() {
+    void testIsRepeat() {
         when(serverStatus.isRepeat()).thenReturn(true);
-        assertTrue(mpdPlayer.isRepeat());
+        assertThat(mpdPlayer.isRepeat(), is(true));
     }
 
     @Test
-    public void testGetBitrate() {
+    void testGetBitrate() {
         when(serverStatus.getBitrate()).thenReturn(1);
-        assertTrue(1 == mpdPlayer.getBitrate());
+        assertThat(mpdPlayer.getBitrate(), is(equalTo(1)));
     }
 
     @Test
-    public void testGetVolume() {
+    void testGetVolume() {
         when(serverStatus.getVolume()).thenReturn(1);
-        assertTrue(1 == mpdPlayer.getVolume());
+        assertThat(mpdPlayer.getVolume(), is(equalTo(1)));
     }
 
     @Test
-    public void testSetVolume() {
+    void testSetVolume() {
         when(playerProperties.getSetVolume()).thenCallRealMethod();
         mpdPlayer.setVolume(0);
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), integerArgumentCaptor.capture());
-        assertEquals(playerProperties.getSetVolume(), stringArgumentCaptor.getValue());
-        assertTrue(0 == integerArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getSetVolume()))));
+        assertThat(integerArgumentCaptor.getValue(), is(equalTo(0)));
     }
 
     @Test
-    public void testSetVolumeOutOfRangeHigh() {
+    void testSetVolumeOutOfRangeHigh() {
         mpdPlayer.setVolume(101);
         verify(commandExecutor, never())
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
@@ -447,91 +444,113 @@ public class MPDPlayerTest {
     }
 
     @Test
-    public void testSetVolumeOutOfRangeLow() {
+    void testSetVolumeOutOfRangeLow() {
         mpdPlayer.setVolume(-1);
         verify(commandExecutor, never())
                 .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
     }
 
     @Test
-    public void testGetXFade() {
+    void testGetXFade() {
         when(serverStatus.getXFade()).thenReturn(1);
-        assertTrue(1 == mpdPlayer.getXFade());
+        assertThat(mpdPlayer.getXFade(), is(equalTo(1)));
     }
 
     @Test
-    public void testSetXFade() {
+    void testSetXFade() {
         when(playerProperties.getXFade()).thenCallRealMethod();
         mpdPlayer.setXFade(5);
         verify(commandExecutor)
                 .sendCommand(stringArgumentCaptor.capture(), integerArgumentCaptor.capture());
-        assertEquals(playerProperties.getXFade(), stringArgumentCaptor.getValue());
-        assertTrue(5 == integerArgumentCaptor.getValue());
+        assertThat(stringArgumentCaptor.getValue(), is(equalTo((playerProperties.getXFade()))));
+        assertThat(integerArgumentCaptor.getValue(), is(equalTo(5)));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testSetSingle(boolean single) {
+        when(playerProperties.getSingle()).thenCallRealMethod();
+        mpdPlayer.setSingle(single);
+        verify(commandExecutor)
+                .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo((playerProperties.getSingle()))));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo(single ? "1" : "0")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testSetConsume(boolean consume) {
+        when(playerProperties.getConsume()).thenCallRealMethod();
+        mpdPlayer.setConsume(consume);
+        verify(commandExecutor)
+                .sendCommand(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getAllValues().get(0), is(equalTo((playerProperties.getConsume()))));
+        assertThat(stringArgumentCaptor.getAllValues().get(1), is(equalTo(consume ? "1" : "0")));
     }
 
     @Test
-    public void testGetElapsedTime() {
+    void testGetElapsedTime() {
         when(serverStatus.getElapsedTime()).thenReturn(1L);
-        assertTrue(1 == mpdPlayer.getElapsedTime());
+        assertThat(mpdPlayer.getElapsedTime(), is(equalTo(1L)));
     }
 
     @Test
-    public void testGetTotalTime() {
+    void testGetTotalTime() {
         when(serverStatus.getTotalTime()).thenReturn(1L);
-        assertTrue(1 == mpdPlayer.getTotalTime());
+        assertThat(mpdPlayer.getTotalTime(), is(equalTo(1L)));
     }
 
     @Test
-    public void testGetStatusPlaying() {
+    void testGetStatusPlaying() {
         when(serverStatus.getState()).thenReturn(Player.Status.STATUS_PLAYING.getPrefix());
-        assertEquals(Player.Status.STATUS_PLAYING, mpdPlayer.getStatus());
+        assertThat(mpdPlayer.getStatus(), is(equalTo((Player.Status.STATUS_PLAYING))));
     }
 
     @Test
-    public void testGetStatusPaused() {
+    void testGetStatusPaused() {
         when(serverStatus.getState()).thenReturn(Player.Status.STATUS_PAUSED.getPrefix());
-        assertEquals(Player.Status.STATUS_PAUSED, mpdPlayer.getStatus());
+        assertThat(mpdPlayer.getStatus(), is(equalTo((Player.Status.STATUS_PAUSED))));
     }
 
     @Test
-    public void testGetStatusStopped() {
+    void testGetStatusStopped() {
         when(serverStatus.getState()).thenReturn(Player.Status.STATUS_STOPPED.getPrefix());
-        assertEquals(Player.Status.STATUS_STOPPED, mpdPlayer.getStatus());
+        assertThat(mpdPlayer.getStatus(), is(equalTo((Player.Status.STATUS_STOPPED))));
     }
 
     @Test
-    public void testGetAudioDetailsBitrate() {
+    void testGetAudioDetailsBitrate() {
         when(serverStatus.getAudio()).thenReturn("4:5:6");
-        assertTrue(5 == mpdPlayer.getAudioDetails().getBits());
+        assertThat(mpdPlayer.getAudioDetails().getBits(), is(equalTo(5)));
     }
 
     @Test
-    public void testGetAudioDetailsBadBitrate() {
+    void testGetAudioDetailsBadBitrate() {
         when(serverStatus.getAudio()).thenReturn("4:bad:6");
-        assertTrue(-1 == mpdPlayer.getAudioDetails().getBits());
+        assertThat(mpdPlayer.getAudioDetails().getBits(), is(equalTo(-1)));
     }
 
     @Test
-    public void testGetAudioDetailsChannels() {
+    void testGetAudioDetailsChannels() {
         when(serverStatus.getAudio()).thenReturn("4:5:6");
-        assertTrue(6 == mpdPlayer.getAudioDetails().getChannels());
+        assertThat(mpdPlayer.getAudioDetails().getChannels(), is(equalTo(6)));
     }
 
     @Test
-    public void testGetAudioDetailsBadChannels() {
+    void testGetAudioDetailsBadChannels() {
         when(serverStatus.getAudio()).thenReturn("4:5:bad");
-        assertTrue(-1 == mpdPlayer.getAudioDetails().getChannels());
+        assertThat(mpdPlayer.getAudioDetails().getChannels(), is(equalTo(-1)));
     }
 
     @Test
-    public void testGetAudioDetailsSampleRate() {
+    void testGetAudioDetailsSampleRate() {
         when(serverStatus.getAudio()).thenReturn("4:5:6");
-        assertTrue(4 == mpdPlayer.getAudioDetails().getSampleRate());
+        assertThat(mpdPlayer.getAudioDetails().getSampleRate(), is(equalTo(4)));
     }
 
     @Test
-    public void testGetAudioDetailsBadSampleRate() {
+    void testGetAudioDetailsBadSampleRate() {
         when(serverStatus.getAudio()).thenReturn("bad:5:6");
-        assertTrue(-1 == mpdPlayer.getAudioDetails().getSampleRate());
+        assertThat(mpdPlayer.getAudioDetails().getSampleRate(), is(equalTo(-1)));
     }
 }
