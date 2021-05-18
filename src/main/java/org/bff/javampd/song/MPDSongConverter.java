@@ -1,16 +1,17 @@
 package org.bff.javampd.song;
 
+import lombok.extern.slf4j.Slf4j;
+import org.bff.javampd.MPDItem;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author bill
- */
+@Slf4j
 public class MPDSongConverter implements SongConverter {
 
-    private static String delimitingPrefix = SongProcessor.getDelimitingPrefix();
+    private static final String DELIMITING_PREFIX = SongProcessor.getDelimitingPrefix();
 
     @Override
     public List<MPDSong> convertResponseToSong(List<String> list) {
@@ -19,22 +20,22 @@ public class MPDSongConverter implements SongConverter {
 
         String line = null;
         while (iterator.hasNext()) {
-            if (line == null || (!line.startsWith(delimitingPrefix))) {
+            if (line == null || (!line.startsWith(DELIMITING_PREFIX))) {
                 line = iterator.next();
             }
 
-            if (line.startsWith(delimitingPrefix)) {
-                line = processSong(line.substring(delimitingPrefix.length()).trim(), iterator, songList);
+            if (line.startsWith(DELIMITING_PREFIX)) {
+                line = processSong(line.substring(DELIMITING_PREFIX.length()).trim(), iterator, songList);
             }
         }
         return songList;
     }
 
-    private static String processSong(String file, Iterator<String> iterator, List<MPDSong> songs) {
+    private String processSong(String file, Iterator<String> iterator, List<MPDSong> songs) {
         MPDSong song = new MPDSong(file, "");
         initialize(song);
         String line = iterator.next();
-        while (!line.startsWith(delimitingPrefix)) {
+        while (!line.startsWith(DELIMITING_PREFIX)) {
             processLine(song, line);
             if (!iterator.hasNext()) {
                 break;
@@ -59,17 +60,18 @@ public class MPDSongConverter implements SongConverter {
 
     @Override
     public List<String> getSongFileNameList(List<String> fileList) {
-        String prefix = SongProcessor.FILE.getProcessor().getPrefix();
-
         return fileList.stream()
-                .filter(s -> s.startsWith(prefix))
-                .map(s -> (s.substring(prefix.length())).trim())
+                .filter(s -> s.startsWith(DELIMITING_PREFIX))
+                .map(s -> (s.substring(DELIMITING_PREFIX.length())).trim())
                 .collect(Collectors.toList());
     }
 
-    private static void processLine(MPDSong song, String line) {
-        for (SongProcessor songProcessor : SongProcessor.values()) {
-            songProcessor.getProcessor().processTag(song, line);
+    private void processLine(MPDItem song, String line) {
+        var songProcessor = SongProcessor.lookup(line);
+        if (songProcessor != null) {
+            songProcessor.getProcessor().processTag((MPDSong) song, line);
+        } else {
+            log.warn("Processor not found - {}", line);
         }
     }
 }
