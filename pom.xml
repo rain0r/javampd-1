@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.thejavashop</groupId>
+    <groupId>org.hihn</groupId>
     <artifactId>javampd</artifactId>
     <packaging>jar</packaging>
     <version>7.0.0-SNAPSHOT</version>
     <name>JavaMPD</name>
     <description>A Java API for controlling the Music Player Daemon (MPD)</description>
-    <url>https://github.com/finnyb/javampd/</url>
+    <url>https://github.com/rain0r/javampd/</url>
     <developers>
         <developer>
             <id>bill</id>
@@ -29,16 +29,16 @@
     </licenses>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/finnyb/javampd/issues</url>
+        <url>https://github.com/rain0r/javampd/issues</url>
     </issueManagement>
     <scm>
-        <connection>scm:git:https://github.com/finnyb/javampd.git</connection>
-        <developerConnection>scm:git:https://github.com/finnyb/javampd.git</developerConnection>
-        <url>https://github.com/finnyb/javampd</url>
+        <connection>scm:git:https://github.com/rain0r/javampd.git</connection>
+        <developerConnection>scm:git:https://github.com/rain0r/javampd.git</developerConnection>
+        <url>https://github.com/rain0r/javampd</url>
     </scm>
     <ciManagement>
         <system>travis-ci</system>
-        <url>https://travis-ci.org/github/finnyb/javampd</url>
+        <url>https://travis-ci.org/github/rain0r/javampd</url>
     </ciManagement>
     <distributionManagement>
         <site>
@@ -61,8 +61,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <junit.jupiter.version>5.6.2</junit.jupiter.version>
         <mockito.version>3.4.4</mockito.version>
-        <sonar.projectKey>finnyb_javampd</sonar.projectKey>
-        <sonar.organization>finnyb</sonar.organization>
+        <sonar.projectKey>rain0r_javampd</sonar.projectKey>
+        <sonar.organization>rain0r</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <build>
